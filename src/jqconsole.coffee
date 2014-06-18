@@ -143,11 +143,13 @@ class JQConsole
   #     Defaults to DEFAULT_PROMPT_LABEL.
   #   @arg prompt_continue: The label to show before continuation lines of the
   #     command prompt. Optional. Defaults to DEFAULT_PROMPT_CONINUE_LABEL.
-  constructor: (outer_container, header, prompt_label, prompt_continue_label) ->
+  constructor: (outer_container, header, prompt_label, prompt_continue_label, auto_scroll) ->
     # Mobile devices supported sniff.
     @isMobile = !!navigator.userAgent.match /iPhone|iPad|iPod|Android/i
     @isIos = !!navigator.userAgent.match /iPhone|iPad|iPod/i
     @isAndroid = !!navigator.userAgent.match /Android/i
+
+    @auto_scroll = auto_scroll ? true 
 
     @$window = $(window)
 
@@ -1106,6 +1108,9 @@ class JQConsole
   # Scrolls the window to the cursor vertical position.
   # Called with every input/output to the console.
   _ScrollToEnd: ->
+    if not @auto_scroll
+      return
+
     # Scroll console to the bottom.
     @$container.scrollTop @$container[0].scrollHeight
 
@@ -1321,8 +1326,8 @@ class JQConsole
     # is already extracted and has been put on the left of the prompt.
     @$composition.detach()
 
-$.fn.jqconsole = (header, prompt_main, prompt_continue) ->
-  new JQConsole this, header, prompt_main, prompt_continue
+$.fn.jqconsole = (header, prompt_main, prompt_continue, auto_scroll) ->
+  new JQConsole this, header, prompt_main, prompt_continue, auto_scroll
 
 $.fn.jqconsole.JQConsole = JQConsole
 $.fn.jqconsole.Ansi = Ansi
