@@ -1108,9 +1108,6 @@ class JQConsole
   # Scrolls the window to the cursor vertical position.
   # Called with every input/output to the console.
   _ScrollToEnd: ->
-    if not @auto_scroll
-      return
-
     # Scroll console to the bottom.
     @$container.scrollTop @$container[0].scrollHeight
 
@@ -1120,8 +1117,9 @@ class JQConsole
       left: pos.left
       top: pos.top
 
-    # Give time for mobile browsers to zoom in on textarea
-    setTimeout @ScrollWindowToPrompt.bind(@), 50
+    if @auto_scroll
+      # Give time for mobile browsers to zoom in on textarea
+      setTimeout @ScrollWindowToPrompt.bind(@), 50
 
   ScrollWindowToPrompt: ->
     # The cursor's top position is effected by the scroll-top of the console
