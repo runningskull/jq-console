@@ -143,13 +143,14 @@ class JQConsole
   #     Defaults to DEFAULT_PROMPT_LABEL.
   #   @arg prompt_continue: The label to show before continuation lines of the
   #     command prompt. Optional. Defaults to DEFAULT_PROMPT_CONINUE_LABEL.
-  constructor: (outer_container, header, prompt_label, prompt_continue_label, auto_scroll) ->
+  constructor: (outer_container, header, prompt_label, prompt_continue_label, auto_scroll, auto_focus) ->
     # Mobile devices supported sniff.
     @isMobile = !!navigator.userAgent.match /iPhone|iPad|iPod|Android/i
     @isIos = !!navigator.userAgent.match /iPhone|iPad|iPod/i
     @isAndroid = !!navigator.userAgent.match /Android/i
 
     @auto_scroll = auto_scroll ? true 
+    @auto_focus = auto_focus ? true
 
     @$window = $(window)
 
@@ -492,7 +493,7 @@ class JQConsole
     @state = STATE_INPUT
     @$prompt.attr 'class', CLASS_INPUT
     @$prompt_label.text @_SelectPromptLabel false
-    @Focus()
+    if @auto_focus then @Focus()
     @_ScrollToEnd()
     return undefined
 
@@ -523,7 +524,7 @@ class JQConsole
     @state = STATE_PROMPT
     @$prompt.attr 'class', CLASS_PROMPT + ' ' + @ansi.getClasses()
     @$prompt_label.text @_SelectPromptLabel false
-    @Focus()
+    if @auto_focus then @Focus()
     @_ScrollToEnd()
     return undefined
 
@@ -542,6 +543,10 @@ class JQConsole
   # Sets focus on the console's hidden input box so input can be read.
   Focus: ->
     @$input_source.focus() if not @IsDisabled()
+    return undefined
+
+  Blur: ->
+    @$input_source.blur()
     return undefined
 
   # Sets the number of spaces inserted when indenting.
@@ -1324,8 +1329,8 @@ class JQConsole
     # is already extracted and has been put on the left of the prompt.
     @$composition.detach()
 
-$.fn.jqconsole = (header, prompt_main, prompt_continue, auto_scroll) ->
-  new JQConsole this, header, prompt_main, prompt_continue, auto_scroll
+$.fn.jqconsole = (header, prompt_main, prompt_continue, auto_scroll, auto_focus) ->
+  new JQConsole this, header, prompt_main, prompt_continue, auto_scroll, auto_focus
 
 $.fn.jqconsole.JQConsole = JQConsole
 $.fn.jqconsole.Ansi = Ansi
